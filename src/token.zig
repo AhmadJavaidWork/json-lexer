@@ -9,6 +9,7 @@ pub const TokenKind = enum(u8) {
     bool_true,
     bool_false,
     string,
+    number,
 };
 
 kind: TokenKind,

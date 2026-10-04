@@ -1,5 +1,6 @@
 const std = @import("std");
 const Token = @import("token.zig");
+const utils = @import("utils.zig");
 
 input: []const u8,
 ch: u8 = 0,
@@ -76,7 +77,16 @@ pub fn nextToken(self: *Self) !Token {
             };
         },
         else => {
-            return error.InvalidToken;
+            if (utils.isNumber(self.ch)) {
+                const start: usize = self.position;
+                try self.takeNumber();
+                token = .{
+                    .kind = Token.TokenKind.number,
+                    .literal = self.input[start..self.read_position],
+                };
+            } else {
+                return error.InvalidToken;
+            }
         },
     }
 
@@ -95,14 +105,8 @@ fn takeChar(self: *Self) void {
     self.read_position += 1;
 }
 
-fn takeString(self: *Self) void {
-    while (self.ch != '"') {
-        self.takeChar();
-    }
-}
-
-fn takeWord(self: *Self) void {
-    while (self.peekChar() >= 'a' and self.peekChar() <= 'z') {
+fn skipWhiteSpace(self: *Self) void {
+    while (self.ch == ' ' or self.ch == '\t' or self.ch == '\n' or self.ch == '\r') {
         self.takeChar();
     }
 }
@@ -115,9 +119,28 @@ fn peekChar(self: *Self) u8 {
     }
 }
 
-fn skipWhiteSpace(self: *Self) void {
-    while (self.ch == ' ' or self.ch == '\t' or self.ch == '\n' or self.ch == '\r') {
+fn takeString(self: *Self) void {
+    while (self.ch != '"') {
         self.takeChar();
+    }
+}
+
+fn takeWord(self: *Self) void {
+    while (self.peekChar() >= 'a' and self.peekChar() <= 'z') {
+        self.takeChar();
+    }
+}
+
+fn takeNumber(self: *Self) !void {
+    var isDecimal: bool = false;
+    while (utils.isNumber(self.peekChar()) or (self.peekChar() == '.' and isDecimal == false)) {
+        if (self.peekChar() == '.') {
+            isDecimal = true;
+        }
+        self.takeChar();
+    }
+    if (self.peekChar() == '.' and isDecimal == true) {
+        return error.InvalidNumber;
     }
 }
 
@@ -127,7 +150,9 @@ test "tokenize json" {
         \\    "key1": "value1",
         \\    "key2": "value2",
         \\    "key3": true,
-        \\    "key4": false
+        \\    "key4": false,
+        \\    "key5": 1234,
+        \\    "key6": 12.25
         \\}
     );
 
@@ -148,6 +173,14 @@ test "tokenize json" {
         .{ .kind = Token.TokenKind.string, .literal = "key4" },
         .{ .kind = Token.TokenKind.colon, .literal = ":" },
         .{ .kind = Token.TokenKind.bool_false, .literal = "false" },
+        .{ .kind = Token.TokenKind.comma, .literal = "," },
+        .{ .kind = Token.TokenKind.string, .literal = "key5" },
+        .{ .kind = Token.TokenKind.colon, .literal = ":" },
+        .{ .kind = Token.TokenKind.number, .literal = "1234" },
+        .{ .kind = Token.TokenKind.comma, .literal = "," },
+        .{ .kind = Token.TokenKind.string, .literal = "key6" },
+        .{ .kind = Token.TokenKind.colon, .literal = ":" },
+        .{ .kind = Token.TokenKind.number, .literal = "12.25" },
         .{ .kind = Token.TokenKind.right_brace, .literal = "}" },
         .{ .kind = Token.TokenKind.eof, .literal = "" },
     };
