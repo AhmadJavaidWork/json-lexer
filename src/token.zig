@@ -6,6 +6,8 @@ pub const TokenKind = enum(u8) {
     right_brace,
     colon,
     comma,
+    bool_true,
+    bool_false,
     string,
 };
 

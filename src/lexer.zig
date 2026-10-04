@@ -54,10 +54,25 @@ pub fn nextToken(self: *Self) !Token {
             self.takeChar();
             const start: usize = self.position;
             self.takeString();
-            const end: usize = self.position;
             token = .{
                 .kind = Token.TokenKind.string,
-                .literal = self.input[start..end],
+                .literal = self.input[start..self.position],
+            };
+        },
+        't' => {
+            const start: usize = self.position;
+            self.takeWord();
+            token = .{
+                .kind = Token.TokenKind.bool_true,
+                .literal = self.input[start..self.read_position],
+            };
+        },
+        'f' => {
+            const start: usize = self.position;
+            self.takeWord();
+            token = .{
+                .kind = Token.TokenKind.bool_false,
+                .literal = self.input[start..self.read_position],
             };
         },
         else => {
@@ -86,6 +101,20 @@ fn takeString(self: *Self) void {
     }
 }
 
+fn takeWord(self: *Self) void {
+    while (self.peekChar() >= 'a' and self.peekChar() <= 'z') {
+        self.takeChar();
+    }
+}
+
+fn peekChar(self: *Self) u8 {
+    if (self.read_position >= self.input.len) {
+        return 0;
+    } else {
+        return self.input[self.read_position];
+    }
+}
+
 fn skipWhiteSpace(self: *Self) void {
     while (self.ch == ' ' or self.ch == '\t' or self.ch == '\n' or self.ch == '\r') {
         self.takeChar();
@@ -96,7 +125,9 @@ test "tokenize json" {
     var l = Self.init(
         \\{
         \\    "key1": "value1",
-        \\    "key2": "value2"
+        \\    "key2": "value2",
+        \\    "key3": true,
+        \\    "key4": false
         \\}
     );
 
@@ -109,6 +140,14 @@ test "tokenize json" {
         .{ .kind = Token.TokenKind.string, .literal = "key2" },
         .{ .kind = Token.TokenKind.colon, .literal = ":" },
         .{ .kind = Token.TokenKind.string, .literal = "value2" },
+        .{ .kind = Token.TokenKind.comma, .literal = "," },
+        .{ .kind = Token.TokenKind.string, .literal = "key3" },
+        .{ .kind = Token.TokenKind.colon, .literal = ":" },
+        .{ .kind = Token.TokenKind.bool_true, .literal = "true" },
+        .{ .kind = Token.TokenKind.comma, .literal = "," },
+        .{ .kind = Token.TokenKind.string, .literal = "key4" },
+        .{ .kind = Token.TokenKind.colon, .literal = ":" },
+        .{ .kind = Token.TokenKind.bool_false, .literal = "false" },
         .{ .kind = Token.TokenKind.right_brace, .literal = "}" },
         .{ .kind = Token.TokenKind.eof, .literal = "" },
     };
