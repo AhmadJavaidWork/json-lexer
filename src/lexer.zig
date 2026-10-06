@@ -84,6 +84,17 @@ pub fn nextToken(self: *Self) !Token {
                     .kind = Token.TokenKind.number,
                     .literal = self.input[start..self.read_position],
                 };
+            } else if (utils.isLetter(self.ch)) {
+                const start: usize = self.position;
+                self.takeWord();
+                if (std.mem.eql(u8, "null", self.input[start..self.read_position])) {
+                    token = .{
+                        .kind = Token.TokenKind.null,
+                        .literal = self.input[start..self.read_position],
+                    };
+                } else {
+                    return error.InvalidToken;
+                }
             } else {
                 return error.InvalidToken;
             }
@@ -152,7 +163,8 @@ test "tokenize json" {
         \\    "key3": true,
         \\    "key4": false,
         \\    "key5": 1234,
-        \\    "key6": 12.25
+        \\    "key6": 12.25,
+        \\    "key7": null
         \\}
     );
 
@@ -181,6 +193,10 @@ test "tokenize json" {
         .{ .kind = Token.TokenKind.string, .literal = "key6" },
         .{ .kind = Token.TokenKind.colon, .literal = ":" },
         .{ .kind = Token.TokenKind.number, .literal = "12.25" },
+        .{ .kind = Token.TokenKind.comma, .literal = "," },
+        .{ .kind = Token.TokenKind.string, .literal = "key7" },
+        .{ .kind = Token.TokenKind.colon, .literal = ":" },
+        .{ .kind = Token.TokenKind.null, .literal = "null" },
         .{ .kind = Token.TokenKind.right_brace, .literal = "}" },
         .{ .kind = Token.TokenKind.eof, .literal = "" },
     };
