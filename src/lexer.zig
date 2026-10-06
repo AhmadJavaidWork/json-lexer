@@ -177,7 +177,15 @@ test "tokenize json" {
         \\    "key5": 1234,
         \\    "key6": 12.25,
         \\    "key7": null,
-        \\    "key8": []
+        \\    "key8": [],
+        \\    "key9": ["value3", 123, 456, null, false],
+        \\    "key10": [
+        \\        "value3",
+        \\        123,
+        \\        456,
+        \\        null,
+        \\        false
+        \\    ]
         \\}
     );
 
@@ -215,6 +223,35 @@ test "tokenize json" {
         .{ .kind = Token.TokenKind.colon, .literal = ":" },
         .{ .kind = Token.TokenKind.left_bracket, .literal = "[" },
         .{ .kind = Token.TokenKind.right_bracket, .literal = "]" },
+        .{ .kind = Token.TokenKind.comma, .literal = "," },
+        .{ .kind = Token.TokenKind.string, .literal = "key9" },
+        .{ .kind = Token.TokenKind.colon, .literal = ":" },
+        .{ .kind = Token.TokenKind.left_bracket, .literal = "[" },
+        .{ .kind = Token.TokenKind.string, .literal = "value3" },
+        .{ .kind = Token.TokenKind.comma, .literal = "," },
+        .{ .kind = Token.TokenKind.number, .literal = "123" },
+        .{ .kind = Token.TokenKind.comma, .literal = "," },
+        .{ .kind = Token.TokenKind.number, .literal = "456" },
+        .{ .kind = Token.TokenKind.comma, .literal = "," },
+        .{ .kind = Token.TokenKind.null, .literal = "null" },
+        .{ .kind = Token.TokenKind.comma, .literal = "," },
+        .{ .kind = Token.TokenKind.bool_false, .literal = "false" },
+        .{ .kind = Token.TokenKind.right_bracket, .literal = "]" },
+        .{ .kind = Token.TokenKind.comma, .literal = "," },
+        .{ .kind = Token.TokenKind.string, .literal = "key10" },
+        .{ .kind = Token.TokenKind.colon, .literal = ":" },
+        .{ .kind = Token.TokenKind.left_bracket, .literal = "[" },
+        .{ .kind = Token.TokenKind.string, .literal = "value3" },
+        .{ .kind = Token.TokenKind.comma, .literal = "," },
+        .{ .kind = Token.TokenKind.number, .literal = "123" },
+        .{ .kind = Token.TokenKind.comma, .literal = "," },
+        .{ .kind = Token.TokenKind.number, .literal = "456" },
+        .{ .kind = Token.TokenKind.comma, .literal = "," },
+        .{ .kind = Token.TokenKind.null, .literal = "null" },
+        .{ .kind = Token.TokenKind.comma, .literal = "," },
+        .{ .kind = Token.TokenKind.bool_false, .literal = "false" },
+        .{ .kind = Token.TokenKind.right_bracket, .literal = "]" },
+
         .{ .kind = Token.TokenKind.right_brace, .literal = "}" },
         .{ .kind = Token.TokenKind.eof, .literal = "" },
     };
