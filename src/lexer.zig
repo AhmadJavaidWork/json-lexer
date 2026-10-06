@@ -39,6 +39,18 @@ pub fn nextToken(self: *Self) !Token {
                 .literal = self.input[self.position..self.read_position],
             };
         },
+        '[' => {
+            token = .{
+                .kind = Token.TokenKind.left_bracket,
+                .literal = self.input[self.position..self.read_position],
+            };
+        },
+        ']' => {
+            token = .{
+                .kind = Token.TokenKind.right_bracket,
+                .literal = self.input[self.position..self.read_position],
+            };
+        },
         ':' => {
             token = .{
                 .kind = Token.TokenKind.colon,
@@ -164,7 +176,8 @@ test "tokenize json" {
         \\    "key4": false,
         \\    "key5": 1234,
         \\    "key6": 12.25,
-        \\    "key7": null
+        \\    "key7": null,
+        \\    "key8": []
         \\}
     );
 
@@ -197,6 +210,11 @@ test "tokenize json" {
         .{ .kind = Token.TokenKind.string, .literal = "key7" },
         .{ .kind = Token.TokenKind.colon, .literal = ":" },
         .{ .kind = Token.TokenKind.null, .literal = "null" },
+        .{ .kind = Token.TokenKind.comma, .literal = "," },
+        .{ .kind = Token.TokenKind.string, .literal = "key8" },
+        .{ .kind = Token.TokenKind.colon, .literal = ":" },
+        .{ .kind = Token.TokenKind.left_bracket, .literal = "[" },
+        .{ .kind = Token.TokenKind.right_bracket, .literal = "]" },
         .{ .kind = Token.TokenKind.right_brace, .literal = "}" },
         .{ .kind = Token.TokenKind.eof, .literal = "" },
     };
