@@ -1,0 +1,61 @@
+{
+    "name": "Lexer Test Dataset",
+    "version": 1.2,
+    "enabled": true,
+    "description": "A JSON document designed to test a lexer.",
+    "nullValue": null,
+    "numbers": {
+        "integer": 42,
+        "negative": -17,
+        "decimal": 3.14159,
+        "negativeDecimal": -0.125,
+        "exponent": 6.022e23,
+        "negativeExponent": -1.5e-4,
+        "zero": 0
+    },
+    "strings": {
+        "empty": "",
+        "spaces": "hello world",
+        "quotes": "She said \"hello\".",
+        "backslash": "C:\\Users\\Public\\Documents",
+        "newline": "line one\nline two",
+        "tab": "column1\tcolumn2",
+        "unicode": "Hello, 世界! 🌍",
+        "escaped": "\\\"\/\b\f\n\r\t"
+    },
+    "arrays": [
+        1,
+        2,
+        3,
+        "four",
+        true,
+        false,
+        null,
+        {
+            "nested": "object"
+        },
+        ["nested", "array"]
+    ],
+    "users": [
+        {
+            "id": 1,
+            "name": "Alice",
+            "active": true,
+            "roles": ["admin", "editor"]
+        },
+        {
+            "id": 2,
+            "name": "Bob",
+            "active": false,
+            "roles": ["viewer"]
+        }
+    ],
+    "metadata": {
+        "created": "2026-10-07T19:44:00Z",
+        "tags": ["lexer", "parser", "json", "testing"],
+        "dimensions": {
+            "width": 1920,
+            "height": 1080
+        }
+    }
+}
