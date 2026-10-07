@@ -156,7 +156,16 @@ fn peekChar(self: *Self) u8 {
 }
 
 fn takeString(self: *Self) void {
-    while (self.ch != '"') {
+    var is_escaped: bool = false;
+    while (true) {
+        if (self.ch == '\\' and self.peekChar() == '"') {
+            is_escaped = !is_escaped;
+            self.takeChar();
+            self.takeChar();
+            continue;
+        } else if (self.ch == '"') {
+            break;
+        }
         self.takeChar();
     }
 }
