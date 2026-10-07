@@ -72,6 +72,19 @@ pub fn nextToken(self: *Self) !Token {
                 .literal = self.input[start..self.position],
             };
         },
+        '-' => {
+            if (utils.isNumber(self.peekChar())) {
+                const start: usize = self.position;
+                self.takeChar();
+                try self.takeNumber();
+                token = .{
+                    .kind = Token.TokenKind.number,
+                    .literal = self.input[start..self.read_position],
+                };
+            } else {
+                return error.InvalidTokenAfterMinusSign;
+            }
+        },
         't' => {
             const start: usize = self.position;
             self.takeWord();
@@ -155,15 +168,8 @@ fn takeWord(self: *Self) void {
 }
 
 fn takeNumber(self: *Self) !void {
-    var isDecimal: bool = false;
-    while (utils.isNumber(self.peekChar()) or (self.peekChar() == '.' and isDecimal == false)) {
-        if (self.peekChar() == '.') {
-            isDecimal = true;
-        }
+    while (self.peekChar() != ' ' and self.peekChar() != '\t' and self.peekChar() != '\r' and self.peekChar() != '\n' and self.peekChar() != ',') {
         self.takeChar();
-    }
-    if (self.peekChar() == '.' and isDecimal == true) {
-        return error.InvalidNumber;
     }
 }
 
