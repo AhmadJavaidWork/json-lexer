@@ -88,18 +88,26 @@ pub fn nextToken(self: *Self) !Token {
         't' => {
             const start: usize = self.position;
             self.takeWord();
-            token = .{
-                .kind = Token.TokenKind.bool_true,
-                .literal = self.input[start..self.read_position],
-            };
+            if (std.mem.eql(u8, "true", self.input[start..self.read_position])) {
+                token = .{
+                    .kind = Token.TokenKind.bool_true,
+                    .literal = self.input[start..self.read_position],
+                };
+            } else {
+                return error.InvalidToken;
+            }
         },
         'f' => {
             const start: usize = self.position;
             self.takeWord();
-            token = .{
-                .kind = Token.TokenKind.bool_false,
-                .literal = self.input[start..self.read_position],
-            };
+            if (std.mem.eql(u8, "false", self.input[start..self.read_position])) {
+                token = .{
+                    .kind = Token.TokenKind.bool_false,
+                    .literal = self.input[start..self.read_position],
+                };
+            } else {
+                return error.InvalidToken;
+            }
         },
         else => {
             if (utils.isNumber(self.ch)) {
